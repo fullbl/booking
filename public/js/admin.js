@@ -48,40 +48,20 @@ Booking.prototype.sendForm = function( form, callback ){
 
 /* ---------------------- APP FUNCTIONS ------------------------- */
 
-/**
- * create room from json Object
- * @param  {json} room object
- */
-Booking.prototype.createRoom = function( room ){
-	this.createRowInTable( document.getElementById( 'rooms' ), room );
-};
 
-/**
- * create room from json Object
- * @param  {json} room object
- */
-Booking.prototype.createRoom = function( room ){
-	var tr = document.createElement('TR'),
-		_td = document.createElement('TD'),
-		td,
-		table = document.getElementById('rooms');
 
-	for( var i in room )
-		if( room.hasOwnProperty( i ) ){
-			td = _td.cloneNode();
-			td.innerHTML = room[i];
-			tr.appendChild( td );
-		}
-	table.appendChild( tr );
-};
 
 (function(){
-	if( document.getElementsByTagName( 'form' ).length ){ //attach handler only if there are forms
-		document.getElementById('admin').addEventListener( 'submit', function( e ){
-			if( e.target.tagName == 'FORM' ){
-				e.preventDefault();
-				b.sendForm( e.target, b.createRoom );
-			}
-		} );
-	}
+	b.loadTable( document.getElementById( 'rooms' ) );
+	b.loadTable( document.getElementById( 'bookings' ) );
+
+	/* --------------------- HANDLERS -------------------- */
+	document.getElementById('admin').addEventListener( 'submit', function( e ){
+		if( e.target.tagName == 'FORM' ){
+			e.preventDefault();
+			b.sendForm( e.target, function( room ){
+				b.createRowInTable( room, document.getElementById( 'rooms-table' ) );
+			} );
+		}
+	} );
 })();

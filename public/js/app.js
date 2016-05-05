@@ -83,21 +83,55 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 
 /**
  * create row from json Object
- * @param {DOMElement} table table object
+ * TODO: add actions (edit/delete)
  * @param {json} room object
+ * @param {DOMElement|undefined} table table object. If not present return row
  */
-Booking.createRowInTable( table, object ){
+Booking.prototype.createRowInTable = function( object, table ){
+	if( typeof append === 'undefined' )
+		append = true;
 	var tr = document.createElement('TR'),
 		_td = document.createElement('TD'),
 		td;
 
-	for( var i in room )
+	for( var i in object )
 		if( object.hasOwnProperty( i ) ){
 			td = _td.cloneNode();
 			td.innerHTML = object[i];
 			tr.appendChild( td );
 		}
-	table.appendChild( tr );
+	if( typeof table !== 'undefined' )
+		table.appendChild( tr );
+	else
+		return tr;
+}
+
+/**
+ * load index table
+ * @param  {DOMElement} tableContainer the element which will contain the table
+ */
+Booking.prototype.loadTable = function( tableContainer ){
+	var self = this;
+	this.xhr( tableContainer.dataset.url, 'GET', undefined, function( objects ){
+		var rows = [], 
+			table;
+		if( objects.length ){
+			table = document.createElement('TABLE');
+			for( var i in objects ){
+				if( objects.hasOwnProperty( i ) ){
+					table.appendChild( self.createRowInTable( objects[i] ) );
+				}
+			}
+			table.className = 'table';
+			table.id = tableContainer.id + '-table';
+			tableContainer.appendChild( table );
+		}
+		else{
+			tableContainer.innerHTML = 'No data found';
+		}
+
+
+	});
 }
 
 

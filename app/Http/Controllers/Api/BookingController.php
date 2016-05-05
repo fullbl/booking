@@ -11,5 +11,6 @@ use App\Http\Requests;
  */
 class BookingController extends \App\Http\Controllers\Controller
 {
-    //
+    //TODO: copy from RoomController
+    //TODO: add filtering options for index
 }

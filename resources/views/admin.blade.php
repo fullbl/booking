@@ -26,7 +26,13 @@
                 <div class="panel-heading">Dashboard</div>
 
                 <div class="panel-body">
-                    <table id="rooms" class="table"></table>
+                    <h2>Rooms</h2>
+                    <div id="rooms" class="table" data-url="{{route('api.room.index')}}">Loading rooms...</div>
+                </div>
+
+                <div class="panel-body">
+                    <h2>Bookings</h2>
+                    <div id="bookings" class="table" data-url="{{route('api.booking.index')}}">Loading bookings...</div>
                 </div>
             </div>
 

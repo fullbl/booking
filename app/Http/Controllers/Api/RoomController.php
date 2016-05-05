@@ -48,4 +48,8 @@ class RoomController extends \App\Http\Controllers\Controller
 	    		return back()->withInput();
 	    }
     }
+
+    //TODO: update and destroy methods
+    //
+    //TODO: divide login protected methods, here or in routes.php
 }

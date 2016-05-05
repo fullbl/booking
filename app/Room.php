@@ -19,4 +19,12 @@ class Room extends Model
         'name', 'beds', 'price',
     ];
     
+    /**
+     * The attributes that are visible.
+     *
+     * @var array
+     */
+    protected $visible = [
+    	'name', 'beds', 'price',
+    ];
 }
