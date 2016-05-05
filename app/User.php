@@ -1,6 +1,6 @@
 <?php
 
-namespace Illuminate\Foundation\Auth;
+namespace App;
 
 use Illuminate\Auth\Authenticatable;
 use Jenssegers\Mongodb\Eloquent\Model;
