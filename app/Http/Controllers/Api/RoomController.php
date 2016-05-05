@@ -24,6 +24,7 @@ class RoomController extends \App\Http\Controllers\Controller
 
 	/**
 	 * save a new room
+	 * handles also a non ajax-request
 	 * @return Room object just created
 	 */
     public function store( Request $request ){

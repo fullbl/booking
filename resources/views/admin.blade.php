@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('scripts')
+<script defer src="{{ asset('js/admin.js') }}"></script>
+@endsection
+
 @section('content')
 @if (count($errors) > 0)
     <div class="alert alert-danger">
@@ -15,14 +19,14 @@
         {{ session('message') }}
     </div>
 @endif
-<div class="container">
+<div class="container" id="admin">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">Dashboard</div>
 
                 <div class="panel-body">
-                    Loading dashboard
+                    <table id="rooms" class="table"></table>
                 </div>
             </div>
 
@@ -33,15 +37,15 @@
                         {{ csrf_field() }}
                         <div class="form-group">
                             <label for="name">Name:</label>
-                            <input type="text" class="form-control" name="name" id="name">
+                            <input type="text" class="form-control" name="name" id="name" required>
                         </div>
                         <div class="form-group">
                             <label for="price">Price:</label>
-                            <input type="text" class="form-control" name="price" id="price">
+                            <input type="text" class="form-control" name="price" id="price" required>
                         </div>
                         <div class="form-group">
                             <label for="beds">Beds:</label>
-                            <input type="number" class="form-control" name="beds" id="beds">
+                            <input type="number" class="form-control" name="beds" id="beds" required>
                         </div>
                         <button type="submit" class="btn btn-default">Save</button>
                     </form>
