@@ -33,6 +33,18 @@ class RoomController extends \App\Http\Controllers\Controller
 		    'price' => 'required',
 		]);
 
-    	return Room::all();
+		$room = Room::create( $request->all() );
+		if($request->ajax()){
+			if( $room->exists() )
+		    	return $room;
+		    else
+	    		response( '{error: Something bad happened}', 500 );
+	    }
+	    else{
+	    	if( $room->exists() )
+		    	return back()->with( 'message', 'Room created!' );
+		    else
+	    		return back()->withInput();
+	    }
     }
 }
