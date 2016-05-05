@@ -15,15 +15,20 @@
             <div class="panel panel-default">
                 <div class="panel-heading">New room</div>
                 <div class="panel-body">
-                    <form method="POST" method="{{route('api.room.create')" role="form">
+                    <form method="POST" action="{{route('api.room.create')}}" role="form">
                         <div class="form-group">
                             <label for="name">Name:</label>
                             <input type="text" class="form-control" id="name">
                         </div>
                         <div class="form-group">
+                            <label for="price">Price:</label>
+                            <input type="text" class="form-control" id="price">
+                        </div>
+                        <div class="form-group">
                             <label for="beds">Beds:</label>
                             <input type="number" class="form-control" id="beds">
                         </div>
+                        <button type="submit" class="btn btn-default">Save</button>
                     </form>
                 </div>
             </div>

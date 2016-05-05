@@ -28,9 +28,9 @@ class RoomController extends \App\Http\Controllers\Controller
 	 */
     public function store( Request $request ){
     	$this->validate($request, [
-		    'title' => 'required|unique:posts|max:255',
-		    'author.name' => 'required',
-		    'author.description' => 'required',
+		    'name' => 'required|max:255',
+		    'beds' => 'required|integer',
+		    'price' => 'required',
 		]);
 
     	return Room::all();
