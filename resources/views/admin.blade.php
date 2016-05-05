@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
@@ -15,18 +24,19 @@
             <div class="panel panel-default">
                 <div class="panel-heading">New room</div>
                 <div class="panel-body">
-                    <form method="POST" action="{{route('api.room.create')}}" role="form">
+                    <form method="POST" action="{{ route('api.room.store') }}" role="form">
+                        {{ csrf_field() }}
                         <div class="form-group">
                             <label for="name">Name:</label>
-                            <input type="text" class="form-control" id="name">
+                            <input type="text" class="form-control" name="name" id="name">
                         </div>
                         <div class="form-group">
                             <label for="price">Price:</label>
-                            <input type="text" class="form-control" id="price">
+                            <input type="text" class="form-control" name="price" id="price">
                         </div>
                         <div class="form-group">
                             <label for="beds">Beds:</label>
-                            <input type="number" class="form-control" id="beds">
+                            <input type="number" class="form-control" name="beds" id="beds">
                         </div>
                         <button type="submit" class="btn btn-default">Save</button>
                     </form>
