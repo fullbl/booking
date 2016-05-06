@@ -10,6 +10,13 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class Booking extends Model
 {
+
+    /**
+     * specify what is a date
+     * @var array
+     */
+    //protected $dates = ['date'];
+
 	/**
      * The attributes that are mass assignable.
      *
@@ -25,13 +32,13 @@ class Booking extends Model
      * @var array
      */
     protected $visible = [
-    	'_id', 'date', 'beds'
+    	'_id', 'date', 'beds', 'room'
     ];
 
     /**
-     * Get the room that owns the booking.
+     * Get the bookings owned by room.
      */
-    public function user(){
-        return $this->belongsTo( App\Room::class );
+    public function room(){
+        return $this->belongsTo( Room::class )->select( ['name'] );
     }
 }

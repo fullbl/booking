@@ -1,49 +1,9 @@
 /* ------------------ GENERAL FUNCTIONS ------------------------- */
-/**
- * execute a function for every form element
- * @param  {Array}   elements elements collection
- * @param  {Function} callback what to do
- */
-Booking.prototype.loopFormElements = function( elements, callback ){
-	var length = elements.length;
-	for( var i = 0; i < length; i++ ){
-		if( elements[i].value ){
-			//it's really a form element
-			callback( elements[i] );
-		}
-	}
-}
 
-/**
- * send form data through ajax
- * @param  {DOMElement}   form     form DOM Element
- * @param  {Function} callback what to execute after
- */
-Booking.prototype.sendForm = function( elements, action, method, callback ){
-	var formData, 
-		self = this,
-		error = function( errors ){
-			self.loopFormElements( elements, function( el ){
-				self.removeClassName( el.parentElement, 'has-error' );
-			})
 
-			self.loopFormElements( errors, function( el ){
-				self.addClassName( el.parentElement, 'has-error' );
-			})
-		};
-	if( 0 && typeof FormData === 'function' ){
-		formData = new FormData(form);
-	}
-	else{
-		formData = [];
-		self.loopFormElements( elements, function( el ){
-			formData.push( el.name + '=' + el.value );
-		});
-		formData = encodeURI( formData.join( '&' ) );
-	}
 
-	this.xhr( action, method, formData, callback, error );
-};
+
+/* ---------------------- APP FUNCTIONS ------------------------- */
 
 /**
  * turn row values into inputs
@@ -102,7 +62,7 @@ Booking.prototype.removeRowTable = function( row, url ){
 	} );
 };
 
-/* ---------------------- APP FUNCTIONS ------------------------- */
+/* ---------------------- STARTUP FUNCTIONS ------------------------- */
 (function(){
 	var adminContainer = document.getElementById('admin'),
 	roomsForm = document.getElementById( 'admin-rooms' ),
@@ -138,9 +98,13 @@ Booking.prototype.removeRowTable = function( row, url ){
 	adminContainer.addEventListener( 'submit', function( e ){
 		if( e.target.tagName == 'FORM' ){
 			e.preventDefault();
-			b.sendForm( e.target.elements, e.target.action, e.target.method, function( room ){
-				b.createRowInTable( room, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
-			} );
+			b.sendForm( 
+				e.target.elements, 
+				e.target.action, 
+				e.target.method, 
+				function( room ){
+					b.createRowInTable( room, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
+				} );
 		}
 	} );
 })();

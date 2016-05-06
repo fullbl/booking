@@ -86,6 +86,70 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 	req.send( data );
 };
 
+/**
+ * execute a function for every form element
+ * @param  {Array}   elements elements collection
+ * @param  {Function} callback what to do
+ */
+Booking.prototype.loopFormElements = function( elements, callback ){
+	var length = elements.length;
+	for( var i = 0; i < length; i++ ){
+		if( elements[i].value ){
+			//it's really a form element
+			callback( elements[i] );
+		}
+	}
+}
+
+/**
+ * send form data through ajax
+ * @param  {DOMElement}   form     form DOM Element
+ * @param  {Function} callback what to execute after
+ */
+Booking.prototype.sendForm = function( elements, action, method, callback, error ){
+	var formData, 
+		self = this;
+
+	if( typeof error === 'undefined' ){
+		error = function( errors ){
+			self.loopFormElements( elements, function( el ){
+				self.removeClassName( el.parentElement, 'has-error' );
+			})
+
+			self.loopFormElements( errors, function( el ){
+				self.addClassName( el.parentElement, 'has-error' );
+			})
+		};
+	}
+	
+	if( 0 && typeof FormData === 'function' ){
+		formData = new FormData(form);
+	}
+	else{
+		formData = [];
+		self.loopFormElements( elements, function( el ){
+			formData.push( el.name + '=' + el.value );
+		});
+		formData = encodeURI( formData.join( '&' ) );
+	}
+
+	this.xhr( action, method, formData, callback, error );
+};
+
+/**
+ * create and return button for actions
+ * @param  {Array} action array with action names
+ * @return {Button}        button
+ */
+Booking.prototype.createButton = function( action ){
+	var button = document.createElement('BUTTON');
+	button.type = 'button';
+	button.className = 'btn btn-default';
+	button.dataset.action = action;
+	button.innerHTML = action;
+	return button;
+}
+
 /* ---------------------- APP FUNCTIONS ------------------------- */
 
 /**
@@ -104,7 +168,11 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		if( object.hasOwnProperty( i ) && i != '_id' ){
 			td = _td.cloneNode();
 			td.dataset.name = i;
-			td.innerHTML = object[i];
+			if( object[i].hasOwnProperty( 'name' ) ) //it could be a booking with a room object... for simplicity just get the name
+				td.innerHTML = object[i].name;
+			else
+				td.innerHTML = object[i];
+
 			tr.appendChild( td );
 		}
 
@@ -124,17 +192,6 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		return tr;
 }
 
-Booking.prototype.createButton = function( action ){
-	var button = document.createElement('BUTTON');
-	button.type = 'button';
-	button.className = 'btn btn-default';
-	button.dataset.action = action;
-	button.innerHTML = action;
-	return button;
-}
-
-
-
 /**
  * load index table
  * @param  {DOMElement} tableContainer the element which will contain the table
@@ -143,43 +200,108 @@ Booking.prototype.loadTable = function( tableContainer, actions ){
 	var self = this;
 	this.xhr( tableContainer.dataset.url, 'GET', undefined, function( objects ){
 		var rows = [], 
-			table;
-		if( objects.length ){
 			table = document.createElement('TABLE');
+		table.className = 'table';
+		table.id = tableContainer.id + '-table';
+		if( objects.length ){
 			for( var i in objects ){
 				if( objects.hasOwnProperty( i ) ){
 					table.appendChild( self.createRowInTable( objects[i], undefined, actions ) );
 				}
 			}
-			table.className = 'table';
-			table.id = tableContainer.id + '-table';
 			tableContainer.innerHTML = '';
-			tableContainer.appendChild( table );
 		}
 		else{
 			tableContainer.innerHTML = 'No data found';
 		}
-
+		//append it also if it's empty
+		tableContainer.appendChild( table );
 
 	});
 }
 
 
-/* ---------------------- APP FUNCTIONS ------------------------- */
+Booking.prototype.showCalendar = function( row ){
+	var form = document.createElement( 'FORM' ),
+		_input = document.createElement( 'INPUT' );
+	form.method = 'POST';
+	form.action = '/api/booking';
+
+	_input.className = 'form-control';
+
+	input = _input.cloneNode();
+	input.type = 'hidden';
+	input.name = 'room_id';
+	input.value = row.dataset.id;
+	form.appendChild( input );
+
+	input = _input.cloneNode();
+	input.type = 'number';
+	input.name = 'beds';
+	input.placeholder = 'how many beds?';
+	form.appendChild( input );
+
+	input = _input.cloneNode();
+	input.type = 'date';
+	if( input.type != 'date' ) //browser don't support date
+		input.placeholder = 'YYYY-MM-DD';
+	input.name = 'date';
+	form.appendChild( input );
+
+	input = document.createElement( 'button' );
+	input.type = 'button';
+	input.className = 'btn btn-default';
+	input.dataset.action = 'send';
+	input.innerHTML = 'book!';
+	form.appendChild( input );
+
+
+	row.lastChild.dataset.oldHtml = row.lastChild.innerHTML;
+	row.lastChild.innerHTML = '';
+	row.lastChild.appendChild( form );
+}
+
+
+/* ---------------------- STARTUP FUNCTIONS ------------------------- */
 var b = new Booking(); //global, it's used also in admin.js
 
 (function(){
 var userContainer = document.getElementById('user'),
-	roomsForm = document.getElementById( 'user-rooms' );
+	roomsContainer = document.getElementById( 'user-rooms' );
 
-	b.loadTable( roomsForm, [ 'book' ] );
+	b.loadTable( roomsContainer, [ 'book' ] );
+
+	/* --------------------- HANDLERS -------------------- */
 
 	/** actions buttons listener */
-	roomsForm.addEventListener( 'click', function( e ){
+	roomsContainer.addEventListener( 'submit', function( e ){
+		if( e.target.tagName == 'FORM' ){
+			e.preventDefault();
+			b.sendForm( 
+				e.target.children, 
+				e.target.action,
+				e.target.method,
+				function(){
+					alert( 'booking sent!' );
+			} );
+		}
+	});
+	roomsContainer.addEventListener( 'click', function( e ){
 		switch( e.target.dataset.action ){
 			case 'book':
+				b.showCalendar( e.target.parentElement.parentElement );
+				break;
 
-			break;
+			case 'send':
+				e.preventDefault();
+				b.sendForm( 
+					e.target.parentElement.children, 
+					e.target.parentElement.action,
+					e.target.parentElement.method,
+				 	function(){
+						alert( 'booking sent!' );
+					} );
+				break;
 		}
 	});
 

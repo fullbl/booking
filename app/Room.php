@@ -25,6 +25,13 @@ class Room extends Model
      * @var array
      */
     protected $visible = [
-    	'_id', 'name', 'beds', 'price',
+    	'_id', 'name', 'beds', 'price', 'bookings'
     ];
+
+    /**
+     * Get the bookings owned by room.
+     */
+    public function bookings(){
+        return $this->hasMany( Booking::class );
+    }
 }
