@@ -91,23 +91,22 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		append = true;
 	var tr = document.createElement('TR'),
 		_td = document.createElement('TD'),
-		td, action;
+		td;
 
 	for( var i in object )
 		if( object.hasOwnProperty( i ) ){
 			td = _td.cloneNode();
+			td.dataset.name = i;
 			td.innerHTML = object[i];
 			tr.appendChild( td );
 		}
 
 	if( typeof actions !== 'undefined' ){
 		td = _td.cloneNode();
-		for( var i in actions ){
-			action = document.createElement('BUTTON');
-			action.type = 'button';
-			action.className = 'btn btn-default ' + actions[i];
-			action.innerHTML = actions[i];
-			td.appendChild( action );
+		td.className = 'actions';
+		for( var i in actions ){			
+			//TODO: to improve speed, move createButton out of the for cycle
+			td.appendChild( this.createButton( actions[i] ) );
 		}
 		tr.appendChild( td )
 	}
@@ -115,6 +114,42 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		table.appendChild( tr );
 	else
 		return tr;
+}
+
+Booking.prototype.createButton = function( action ){
+	var button = document.createElement('BUTTON');
+	button.type = 'button';
+	button.className = 'btn btn-default';
+	button.dataset.action = action;
+	button.innerHTML = action;
+	return button;
+}
+
+/**
+ * turn row values into inputs
+ * @param {DOMElement} row row of table
+ */
+Booking.prototype.editRowTable = function( row ){
+	var tds = row.children, 
+		saveElement = document.createElement( 'DIV' );
+
+	//save actual row for later
+	row.dataset.oldHtml = row.innerHTML;
+
+	saveElement.appendChild( this.createButton( 'save' ) );
+
+	for( var i in tds ){
+		if( tds[i].className == 'actions' ){
+			tds[i].innerHTML = saveElement.innerHTML;
+		}
+		else{
+			tds[i].innerHTML = '<input '
+				+ 'type="text" '
+				+ 'name="' + tds[i].dataset.name + '" '
+				+ 'value="' + tds[i].innerHTML + '">';
+		}
+	}
+
 }
 
 /**

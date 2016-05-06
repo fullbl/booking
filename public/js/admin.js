@@ -19,11 +19,11 @@ Booking.prototype.loopFormElements = function( elements, callback ){
  * @param  {DOMElement}   form     form DOM Element
  * @param  {Function} callback what to execute after
  */
-Booking.prototype.sendForm = function( form, callback ){
+Booking.prototype.sendForm = function( elements, action, method, callback ){
 	var formData, 
 		self = this,
 		error = function( errors ){
-			self.loopFormElements( form.children, function( el ){
+			self.loopFormElements( elements, function( el ){
 				self.removeClassName( el.parentElement, 'has-error' );
 			})
 
@@ -36,13 +36,55 @@ Booking.prototype.sendForm = function( form, callback ){
 	}
 	else{
 		formData = [];
-		self.loopFormElements( form.elements, function( el ){
+		self.loopFormElements( elements, function( el ){
 			formData.push( el.name + '=' + el.value );
 		});
 		formData = encodeURI( formData.join( '&' ) );
 	}
 
-	this.xhr( form.action, form.method, formData, callback, error );
+	this.xhr( action, method, formData, callback, error );
+};
+
+/**
+ * turn row values into inputs
+ * @param {DOMElement} row row of table
+ */
+Booking.prototype.editRowTable = function( row ){
+	var tds = row.children, 
+		fakeForm = document.createElement( 'FORM' ),
+		saveElement = document.createElement( 'DIV' );
+
+	//save actual row for later
+	row.dataset.oldHtml = row.innerHTML;
+
+	saveElement.appendChild( this.createButton( 'save' ) );
+
+	for( var i in tds ){
+		if( tds.hasOwnProperty( i ) && tds[i].dataset.name != '_id' ){
+			if( tds[i].className == 'actions' ){
+				tds[i].innerHTML = saveElement.innerHTML;
+			}
+			else{
+				tds[i].innerHTML = '<input '
+					+ 'class="form-control" '
+					+ 'type="text" '
+					+ 'name="' + tds[i].dataset.name + '" '
+					+ 'value="' + tds[i].innerHTML + '">';
+			}
+		}
+	}
+
+};
+
+/**
+ * save row data
+ * @param {DOMElement} row row of table
+ * @param {String} url where to send PUT data
+ */
+Booking.prototype.saveRowTable = function( row, url ){
+	this.sendForm( row.getElementsByTagName( 'INPUT' ), url, 'PUT', function( data ){
+		console.log( data );
+	} );
 };
 
 
@@ -52,14 +94,39 @@ Booking.prototype.sendForm = function( form, callback ){
 
 
 (function(){
-	b.loadTable( document.getElementById( 'rooms' ), [ 'edit', 'remove' ] );
-	b.loadTable( document.getElementById( 'bookings' ), [ 'edit', 'remove' ] );
+	var adminContainer = document.getElementById('admin'),
+	roomsForm = document.getElementById( 'rooms' ),
+	bookingsForm = document.getElementById( 'bookings' );
+	b.loadTable( roomsForm, [ 'edit', 'remove' ] );
+	b.loadTable( bookingsForm, [ 'edit', 'remove' ] );
 
 	/* --------------------- HANDLERS -------------------- */
-	document.getElementById('admin').addEventListener( 'submit', function( e ){
+
+	/** actions buttons listener */
+	roomsForm.addEventListener( 'click', function( e ){
+		var id;
+
+		switch( e.target.dataset.action ){
+			case 'edit':
+				b.editRowTable( e.target.parentElement.parentElement );
+				break;
+
+			case 'delete':
+				break;
+
+			case 'save':
+				id = e.target.parentElement.parentElement.children[0].innerHTML;
+				//TODO: get action from backend (using META or <script>)
+				b.saveRowTable( e.target.parentElement.parentElement, '/api/room/' + id );
+			break;
+		}
+	});
+
+	/** forms submit listener */
+	adminContainer.addEventListener( 'submit', function( e ){
 		if( e.target.tagName == 'FORM' ){
 			e.preventDefault();
-			b.sendForm( e.target, function( room ){
+			b.sendForm( e.target.children, e.target.action, e.target.method, function( room ){
 				b.createRowInTable( room, document.getElementById( 'rooms-table' ), [ 'edit', 'remove' ] );
 			} );
 		}

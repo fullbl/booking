@@ -25,6 +25,6 @@ class Room extends Model
      * @var array
      */
     protected $visible = [
-    	'name', 'beds', 'price',
+    	'_id', 'name', 'beds', 'price',
     ];
 }
