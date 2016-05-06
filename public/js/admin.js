@@ -90,6 +90,18 @@ Booking.prototype.saveRowTable = function( row, url ){
 };
 
 
+/**
+ * delete row data
+ * @param {DOMElement} row row of table
+ * @param {String} url where to send PUT data
+ */
+Booking.prototype.removeRowTable = function( row, url ){
+	var self = this;
+	this.xhr( url, 'DELETE', undefined, function(){
+		row.parentElement.removeChild( row );
+	} );
+};
+
 /* ---------------------- APP FUNCTIONS ------------------------- */
 
 
@@ -111,7 +123,10 @@ Booking.prototype.saveRowTable = function( row, url ){
 				b.editRowTable( e.target.parentElement.parentElement );
 				break;
 
-			case 'delete':
+			case 'remove':
+				b.removeRowTable( 
+					e.target.parentElement.parentElement, 
+					'/api/room/' + e.target.parentElement.parentElement.dataset.id );
 				break;
 
 			case 'save':

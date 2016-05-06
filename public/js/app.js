@@ -46,7 +46,7 @@ Booking.prototype.removeClassName = function( element, className ){
  * @param  {Function} callback function to execute in case of error
  */
 Booking.prototype.xhr = function( url, method, data, callback, error ){
-	var allowedMethods = [ 'GET', 'POST', 'CREATE', 'PUT' ],
+	var allowedMethods = [ 'GET', 'POST', 'PUT', 'DELETE' ],
 		req = new XMLHttpRequest();
 	method = method.toUpperCase();
 	if( allowedMethods.indexOf( method ) === -1 ){
@@ -59,11 +59,17 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 
 	    	if( status == 2 ){
 	    		if( typeof callback === 'function' )
-	        		callback( JSON.parse( req.response ) );
+	    			if( req.response )
+	        			callback( JSON.parse( req.response ) );
+	        		else
+	        			callback();
 	    	}
 	        else if( typeof error === 'function' ){
 	        	try{
-	        		error( JSON.parse( req.response ) );
+	        		if( req.response )
+	        			error( JSON.parse( req.response ) );
+	        		else
+	        			error();
 	        	}
 	        	catch( e ){
 	        		alert( 'something bad happened' );

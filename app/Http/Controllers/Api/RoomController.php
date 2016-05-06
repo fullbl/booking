@@ -39,7 +39,7 @@ class RoomController extends \App\Http\Controllers\Controller
 			if( $room->exists() )
 		    	return $room;
 		    else
-	    		response( '{error: Something bad happened}', 500 );
+				return response( '{error: Something bad happened}', 500 );
 	    }
 	    else{
 	    	if( $room->exists() )
@@ -51,7 +51,7 @@ class RoomController extends \App\Http\Controllers\Controller
 
     /**
 	 * update a room	 
-	 * @return Room object just created
+	 * @return Room object just updated
 	 */
     public function update( Request $request, $id ){
     	$this->validate($request, [
@@ -62,18 +62,26 @@ class RoomController extends \App\Http\Controllers\Controller
 
 		$room = Room::find( $id );
 		if( !$room->exists() ){
-			response( '{error: Room not found}', 404 );
-			return;
+			return response( '{error: Room not found}', 404 );
 		}
 
 		if( $room->update( $request->all() ) )
 			return $room;
 		else
-			response( '{error: Something bad happened}', 500 );
+			return response( '{error: Something bad happened}', 500 );
 
     }
 
-    //TODO: update and destroy methods
-    //
+    /**
+	 * delete a room	 
+	 */
+    public function destroy( Request $request, $id ){
+		if( Room::destroy( $id ) )
+			return response( '', 204 ); //204 means ok, but you don't get any content back
+		else
+			return response( '{error: Something bad happened}', 500 );
+
+    }
+
     //TODO: divide login protected methods, here or in routes.php
 }
