@@ -82,17 +82,16 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 /* ---------------------- APP FUNCTIONS ------------------------- */
 
 /**
- * create row from json Object
- * TODO: add actions (edit/delete)
+ * create row from json Object with link for actions
  * @param {json} room object
  * @param {DOMElement|undefined} table table object. If not present return row
  */
-Booking.prototype.createRowInTable = function( object, table ){
+Booking.prototype.createRowInTable = function( object, table, actions ){
 	if( typeof append === 'undefined' )
 		append = true;
 	var tr = document.createElement('TR'),
 		_td = document.createElement('TD'),
-		td;
+		td, action;
 
 	for( var i in object )
 		if( object.hasOwnProperty( i ) ){
@@ -100,6 +99,18 @@ Booking.prototype.createRowInTable = function( object, table ){
 			td.innerHTML = object[i];
 			tr.appendChild( td );
 		}
+
+	if( typeof actions !== 'undefined' ){
+		td = _td.cloneNode();
+		for( var i in actions ){
+			action = document.createElement('BUTTON');
+			action.type = 'button';
+			action.className = 'btn btn-default ' + actions[i];
+			action.innerHTML = actions[i];
+			td.appendChild( action );
+		}
+		tr.appendChild( td )
+	}
 	if( typeof table !== 'undefined' )
 		table.appendChild( tr );
 	else
@@ -110,7 +121,7 @@ Booking.prototype.createRowInTable = function( object, table ){
  * load index table
  * @param  {DOMElement} tableContainer the element which will contain the table
  */
-Booking.prototype.loadTable = function( tableContainer ){
+Booking.prototype.loadTable = function( tableContainer, actions ){
 	var self = this;
 	this.xhr( tableContainer.dataset.url, 'GET', undefined, function( objects ){
 		var rows = [], 
@@ -119,7 +130,7 @@ Booking.prototype.loadTable = function( tableContainer ){
 			table = document.createElement('TABLE');
 			for( var i in objects ){
 				if( objects.hasOwnProperty( i ) ){
-					table.appendChild( self.createRowInTable( objects[i] ) );
+					table.appendChild( self.createRowInTable( objects[i], undefined, actions ) );
 				}
 			}
 			table.className = 'table';

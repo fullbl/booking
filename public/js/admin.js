@@ -52,15 +52,15 @@ Booking.prototype.sendForm = function( form, callback ){
 
 
 (function(){
-	b.loadTable( document.getElementById( 'rooms' ) );
-	b.loadTable( document.getElementById( 'bookings' ) );
+	b.loadTable( document.getElementById( 'rooms' ), [ 'edit', 'remove' ] );
+	b.loadTable( document.getElementById( 'bookings' ), [ 'edit', 'remove' ] );
 
 	/* --------------------- HANDLERS -------------------- */
 	document.getElementById('admin').addEventListener( 'submit', function( e ){
 		if( e.target.tagName == 'FORM' ){
 			e.preventDefault();
 			b.sendForm( e.target, function( room ){
-				b.createRowInTable( room, document.getElementById( 'rooms-table' ) );
+				b.createRowInTable( room, document.getElementById( 'rooms-table' ), [ 'edit', 'remove' ] );
 			} );
 		}
 	} );
