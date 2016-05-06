@@ -103,14 +103,10 @@ Booking.prototype.removeRowTable = function( row, url ){
 };
 
 /* ---------------------- APP FUNCTIONS ------------------------- */
-
-
-
-
 (function(){
 	var adminContainer = document.getElementById('admin'),
-	roomsForm = document.getElementById( 'rooms' ),
-	bookingsForm = document.getElementById( 'bookings' );
+	roomsForm = document.getElementById( 'admin-rooms' ),
+	bookingsForm = document.getElementById( 'admin-bookings' );
 	b.loadTable( roomsForm, [ 'edit', 'remove' ] );
 	b.loadTable( bookingsForm, [ 'edit', 'remove' ] );
 
@@ -143,7 +139,7 @@ Booking.prototype.removeRowTable = function( row, url ){
 		if( e.target.tagName == 'FORM' ){
 			e.preventDefault();
 			b.sendForm( e.target.elements, e.target.action, e.target.method, function( room ){
-				b.createRowInTable( room, document.getElementById( 'rooms-table' ), [ 'edit', 'remove' ] );
+				b.createRowInTable( room, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
 			} );
 		}
 	} );

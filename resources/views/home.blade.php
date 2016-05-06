@@ -7,10 +7,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Book your room</div>
 
-                <div class="panel-body" id="rooms">
-                    loading rooms...
+                <div class="panel-body">
+                    <h2>Rooms</h2>
+                    <div id="user-rooms" class="table" data-url="{{route('api.room.index')}}">Loading rooms...</div>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 </div>

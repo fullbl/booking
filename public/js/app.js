@@ -153,6 +153,7 @@ Booking.prototype.loadTable = function( tableContainer, actions ){
 			}
 			table.className = 'table';
 			table.id = tableContainer.id + '-table';
+			tableContainer.innerHTML = '';
 			tableContainer.appendChild( table );
 		}
 		else{
@@ -164,4 +165,24 @@ Booking.prototype.loadTable = function( tableContainer, actions ){
 }
 
 
-var b = new Booking();
+/* ---------------------- APP FUNCTIONS ------------------------- */
+var b = new Booking(); //global, it's used also in admin.js
+
+(function(){
+var userContainer = document.getElementById('user'),
+	roomsForm = document.getElementById( 'user-rooms' );
+
+	b.loadTable( roomsForm, [ 'book' ] );
+
+	/** actions buttons listener */
+	roomsForm.addEventListener( 'click', function( e ){
+		switch( e.target.dataset.action ){
+			case 'book':
+
+			break;
+		}
+	});
+
+
+
+})();
