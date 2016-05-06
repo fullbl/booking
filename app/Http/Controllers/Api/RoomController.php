@@ -49,6 +49,30 @@ class RoomController extends \App\Http\Controllers\Controller
 	    }
     }
 
+    /**
+	 * update a room	 
+	 * @return Room object just created
+	 */
+    public function update( Request $request, $id ){
+    	$this->validate($request, [
+		    'name' => 'required|max:255',
+		    'beds' => 'required|integer',
+		    'price' => 'required',
+		]);
+
+		$room = Room::find( $id );
+		if( !$room->exists() ){
+			response( '{error: Room not found}', 404 );
+			return;
+		}
+
+		if( $room->update( $request->all() ) )
+			return $room;
+		else
+			response( '{error: Something bad happened}', 500 );
+
+    }
+
     //TODO: update and destroy methods
     //
     //TODO: divide login protected methods, here or in routes.php

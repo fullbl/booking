@@ -74,6 +74,7 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 	};
 	req.open( method, url, true );
 	req.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' );
+	req.setRequestHeader( 'X-CSRF-TOKEN', document.querySelector("meta[name='csrf-token']").getAttribute('content') );
 	req.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded; charset=UTF-8' );
 
 	req.send( data );
@@ -94,7 +95,7 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		td;
 
 	for( var i in object )
-		if( object.hasOwnProperty( i ) ){
+		if( object.hasOwnProperty( i ) && i != '_id' ){
 			td = _td.cloneNode();
 			td.dataset.name = i;
 			td.innerHTML = object[i];
@@ -108,6 +109,7 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 			//TODO: to improve speed, move createButton out of the for cycle
 			td.appendChild( this.createButton( actions[i] ) );
 		}
+		tr.dataset.id = object._id;
 		tr.appendChild( td )
 	}
 	if( typeof table !== 'undefined' )
@@ -125,32 +127,7 @@ Booking.prototype.createButton = function( action ){
 	return button;
 }
 
-/**
- * turn row values into inputs
- * @param {DOMElement} row row of table
- */
-Booking.prototype.editRowTable = function( row ){
-	var tds = row.children, 
-		saveElement = document.createElement( 'DIV' );
 
-	//save actual row for later
-	row.dataset.oldHtml = row.innerHTML;
-
-	saveElement.appendChild( this.createButton( 'save' ) );
-
-	for( var i in tds ){
-		if( tds[i].className == 'actions' ){
-			tds[i].innerHTML = saveElement.innerHTML;
-		}
-		else{
-			tds[i].innerHTML = '<input '
-				+ 'type="text" '
-				+ 'name="' + tds[i].dataset.name + '" '
-				+ 'value="' + tds[i].innerHTML + '">';
-		}
-	}
-
-}
 
 /**
  * load index table

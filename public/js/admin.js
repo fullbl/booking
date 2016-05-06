@@ -60,7 +60,7 @@ Booking.prototype.editRowTable = function( row ){
 	saveElement.appendChild( this.createButton( 'save' ) );
 
 	for( var i in tds ){
-		if( tds.hasOwnProperty( i ) && tds[i].dataset.name != '_id' ){
+		if( tds.hasOwnProperty( i ) ){
 			if( tds[i].className == 'actions' ){
 				tds[i].innerHTML = saveElement.innerHTML;
 			}
@@ -82,8 +82,10 @@ Booking.prototype.editRowTable = function( row ){
  * @param {String} url where to send PUT data
  */
 Booking.prototype.saveRowTable = function( row, url ){
+	var self = this;
 	this.sendForm( row.getElementsByTagName( 'INPUT' ), url, 'PUT', function( data ){
-		console.log( data );
+		var tr = self.createRowInTable( data, undefined, [ 'edit', 'remove' ] );
+		row.parentElement.replaceChild( tr, row );
 	} );
 };
 
@@ -104,8 +106,6 @@ Booking.prototype.saveRowTable = function( row, url ){
 
 	/** actions buttons listener */
 	roomsForm.addEventListener( 'click', function( e ){
-		var id;
-
 		switch( e.target.dataset.action ){
 			case 'edit':
 				b.editRowTable( e.target.parentElement.parentElement );
@@ -115,9 +115,10 @@ Booking.prototype.saveRowTable = function( row, url ){
 				break;
 
 			case 'save':
-				id = e.target.parentElement.parentElement.children[0].innerHTML;
 				//TODO: get action from backend (using META or <script>)
-				b.saveRowTable( e.target.parentElement.parentElement, '/api/room/' + id );
+				b.saveRowTable( 
+					e.target.parentElement.parentElement, 
+					'/api/room/' + e.target.parentElement.parentElement.dataset.id );
 			break;
 		}
 	});
@@ -126,7 +127,7 @@ Booking.prototype.saveRowTable = function( row, url ){
 	adminContainer.addEventListener( 'submit', function( e ){
 		if( e.target.tagName == 'FORM' ){
 			e.preventDefault();
-			b.sendForm( e.target.children, e.target.action, e.target.method, function( room ){
+			b.sendForm( e.target.elements, e.target.action, e.target.method, function( room ){
 				b.createRowInTable( room, document.getElementById( 'rooms-table' ), [ 'edit', 'remove' ] );
 			} );
 		}
