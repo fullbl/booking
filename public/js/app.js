@@ -97,10 +97,7 @@ Booking.prototype.loopFormElements = function( elements, callback ){
 	if( length ) //this will convert HTMLCollections into simple arrays -- avoid reiteraction
 		elements = [].slice.call( elements ); 
 	for( var i = 0; i < length; i++ ){
-		if( elements[i].value ){
-			//it's really a form element
-			callback( elements[i] );
-		}
+		callback( elements[i] );
 	}
 };
 
@@ -115,10 +112,14 @@ Booking.prototype.showResponseErrors = function( elements, errors ){
 		alert( errors.error );
 	}
 	this.loopFormElements( elements, function( el ){
-		if( errors.hasOwnProperty( el.name ) > -1 )
-			self.removeClassName( el.parentElement, 'has-error' );
-		else
+		if( errors.hasOwnProperty( el.name ) ){
+			el.parentElement.title = errors[el.name];
 			self.addClassName( el.parentElement, 'has-error' );
+		}
+		else{
+			el.parentElement.title = '';
+			self.removeClassName( el.parentElement, 'has-error' );
+		}
 
 	})
 };

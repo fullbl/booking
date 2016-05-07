@@ -49,7 +49,7 @@ class BookingController extends \App\Http\Controllers\Controller
 	 */
     public function store( Request $request ){
     	$this->validate($request, [
-		    'beds' => 'required|integer',
+		    'beds' => 'required|integer|min:0',
 		    'date' => 'required|date',
 		    'room_id' => 'required|exists:rooms,_id'
 		]);
@@ -82,7 +82,7 @@ class BookingController extends \App\Http\Controllers\Controller
 	 */
     public function update( Request $request, $id ){
     	$this->validate( $request, [
-		    'beds' => 'required|integer',
+		    'beds' => 'required|integer|min:0',
 		    'date' => 'required|date'
 		] );
 

@@ -42,8 +42,8 @@ class RoomController extends \App\Http\Controllers\Controller
     public function store( Request $request ){
     	$this->validate($request, [
 		    'name' => 'required|max:255',
-		    'beds' => 'required|integer',
-		    'price' => 'required',
+		    'beds' => 'required|integer|min:0',
+		    'price' => 'required|max:255',
 		]);
 
 		$room = Room::create( $request->all() );
@@ -68,8 +68,8 @@ class RoomController extends \App\Http\Controllers\Controller
     public function update( Request $request, $id ){
     	$this->validate($request, [
 		    'name' => 'required|max:255',
-		    'beds' => 'required|integer',
-		    'price' => 'required',
+		    'beds' => 'required|integer|min:0',
+		    'price' => 'required|max:255',
 		]);
 
 		$room = Room::find( $id );
