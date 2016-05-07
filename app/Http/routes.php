@@ -22,6 +22,11 @@ Route::group( ['prefix' => 'api'], function (){
 
 	Route::resource('booking', 'Api\BookingController');
 
+	Route::get( 'availability/{date}', [
+    	'as' => 'availability', 
+    	'uses' => 'Api\RoomController@checkAvailability'
+	]);
+
 });
 
 Route::auth();

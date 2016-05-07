@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 
 use App\Room;
+use App\Booking;
 
 /**
  * This class is responsible for room resources CRUD
@@ -94,5 +95,25 @@ class RoomController extends \App\Http\Controllers\Controller
 
     }
 
-    //TODO: divide login protected methods, here or in routes.php
+	/**
+	 * returns room names with availability for chosen date
+	 * query can be improved, but this mantain database compatibility
+	 * @param  string $date date in YYYY-MM-DD format
+	 * @return Object       [room name, availability]
+	 */
+    public function checkAvailability( $date ){
+    	$rooms = Room::with([
+    		'bookings' => function( $query ) use( $date ){  
+    			$query->where('date', $date );
+    		}])->get( ['name', 'beds', 'bookings.beds'] );
+
+    	//loop through collection and calculate free beds
+    	$rooms->map( function( $item, $key ){
+    		$item['beds'] = $item['beds'] - $item->bookings->sum('beds');
+    		unset( $item['bookings'] );
+    	});
+
+    	return $rooms->all();
+    }
 }
+

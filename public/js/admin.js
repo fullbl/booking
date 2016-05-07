@@ -103,24 +103,28 @@ Booking.prototype.removeRowTable = function( row, url ){
 
 	}
 	/** actions buttons listener */
-	roomsForm.addEventListener( 'click', function( e ){
-		handler( '/api/room/', e ); //TODO: get action from backend (using META or <script>)
-	});
-	bookingsForm.addEventListener( 'click', function( e ){
-		handler( '/api/booking/', e ); //TODO: get action from backend (using META or <script>)
-	});
+	if( roomsForm )
+		roomsForm.addEventListener( 'click', function( e ){
+			handler( '/api/room/', e ); //TODO: get action from backend (using META or <script>)
+		});
+
+	if( bookingsForm )
+		bookingsForm.addEventListener( 'click', function( e ){
+			handler( '/api/booking/', e ); //TODO: get action from backend (using META or <script>)
+		});
 
 	/** forms submit listener */
-	adminContainer.addEventListener( 'submit', function( e ){
-		if( e.target.tagName == 'FORM' ){
-			e.preventDefault();
-			b.sendForm( 
-				e.target.elements, 
-				e.target.action, 
-				e.target.method, 
-				function( obj ){
-					b.createRowInTable( obj, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
-				} );
-		}
-	} );
+	if( adminContainer )
+		adminContainer.addEventListener( 'submit', function( e ){
+			if( e.target.tagName == 'FORM' ){
+				e.preventDefault();
+				b.sendForm( 
+					e.target.elements, 
+					e.target.action, 
+					e.target.method, 
+					function( obj ){
+						b.createRowInTable( obj, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
+					} );
+			}
+		} );
 })();

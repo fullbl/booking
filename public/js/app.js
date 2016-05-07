@@ -88,11 +88,14 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 
 /**
  * execute a function for every form element
- * @param  {Array}   elements elements collection
+ * @param  {Array|HtmlCollection}   elements elements collection
  * @param  {Function} callback what to do
  */
 Booking.prototype.loopFormElements = function( elements, callback ){
 	var length = elements.length;
+	
+	if( length ) //this will convert HTMLCollections into simple arrays -- avoid reiteraction
+		elements = [].slice.call( elements ); 
 	for( var i = 0; i < length; i++ ){
 		if( elements[i].value ){
 			//it's really a form element
@@ -122,8 +125,11 @@ Booking.prototype.showResponseErrors = function( elements, errors ){
 
 /**
  * send form data through ajax
- * @param  {DOMElement}   form     form DOM Element
+ * @param  {Array|HTMLcollection}   elements     form DOM Elements or array
+ * @param  {String}   action     url where to send data
+ * @param  {String}   method    method to use
  * @param  {Function} callback what to execute after
+ * @param  {Function}   error     what to do in case of error (default provided)
  */
 Booking.prototype.sendForm = function( elements, action, method, callback, error ){
 	var formData, 
@@ -135,16 +141,12 @@ Booking.prototype.sendForm = function( elements, action, method, callback, error
 		};
 	}
 	
-	if( 0 && typeof FormData === 'function' ){
-		formData = new FormData(form);
-	}
-	else{
+	
 		formData = [];
 		self.loopFormElements( elements, function( el ){
 			formData.push( el.name + '=' + el.value );
 		});
 		formData = encodeURI( formData.join( '&' ) );
-	}
 
 	this.xhr( action, method, formData, callback, error );
 };
@@ -244,10 +246,11 @@ Booking.prototype.showCalendar = function( row ){
 	form.action = '/api/booking';
 
 	_input.className = 'form-control';
+	_input.required = 'required';
 
 	input = _input.cloneNode();
 	input.type = 'hidden';
-	input.name = 'room_id';
+	input.name = 'room_id';	
 	input.value = row.dataset.id;
 	form.appendChild( input );
 
@@ -264,11 +267,10 @@ Booking.prototype.showCalendar = function( row ){
 	input.name = 'date';
 	form.appendChild( input );
 
-	input = document.createElement( 'button' );
-	input.type = 'button';
+	input = _input.cloneNode();
+	input.type = 'submit';
 	input.className = 'btn btn-default';
-	input.dataset.action = 'send';
-	input.innerHTML = 'book!';
+	input.value = 'book!';
 	form.appendChild( input );
 
 
@@ -282,14 +284,15 @@ Booking.prototype.showCalendar = function( row ){
 var b = new Booking(); //global, it's used also in admin.js
 
 (function(){
-var userContainer = document.getElementById('user'),
+var availContainer = document.getElementById('user-availability'),
 	roomsContainer = document.getElementById( 'user-rooms' );
+
 	if( roomsContainer ){
 		b.loadTable( roomsContainer, [ 'book' ] );
 
 		/* --------------------- HANDLERS -------------------- */
 
-		/** actions buttons listener */
+		/** action buttons listener */
 		roomsContainer.addEventListener( 'submit', function( e ){
 			if( e.target.tagName == 'FORM' ){
 				e.preventDefault();
@@ -319,6 +322,28 @@ var userContainer = document.getElementById('user'),
 						} );
 					break;
 			}
+		});
+	}
+
+	// check availability form listener
+	if( availContainer ){
+		availContainer.addEventListener( 'submit', function( e ){
+			e.preventDefault();
+			b.sendForm( 
+				{}, 
+				e.target.action + '/' + availContainer.date.value,
+				e.target.method,
+			 	function( rooms ){
+			 		var str = '';
+					for( i in rooms ){
+						if( rooms.hasOwnProperty( i ) && rooms[i].beds )
+							str += 'room ' + rooms[i].name + ' has ' + rooms[i].beds + " free beds.\n"
+					}
+					if( str )
+						alert( str );
+					else
+						alert( 'no availability for that day' );
+			} );
 		});
 	}
 
