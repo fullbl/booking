@@ -11,12 +11,6 @@ use Jenssegers\Mongodb\Eloquent\Model;
 class Booking extends Model
 {
 
-    /**
-     * specify what is a date
-     * @var array
-     */
-    //protected $dates = ['date'];
-
 	/**
      * The attributes that are mass assignable.
      *
@@ -40,5 +34,16 @@ class Booking extends Model
      */
     public function room(){
         return $this->belongsTo( Room::class )->select( ['name'] );
+    }
+
+    /**
+     * Force attribute to integer, we need it to perform operations
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function setBedsAttribute($value)
+    {
+        $this->attributes['beds'] = (int)($value);
     }
 }

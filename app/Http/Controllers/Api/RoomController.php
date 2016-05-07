@@ -37,9 +37,9 @@ class RoomController extends \App\Http\Controllers\Controller
 		$room = Room::create( $request->all() );
 		if($request->ajax()){
 			if( $room->exists() )
-		    	return $room;
+		    	return response( $room, 201 );
 		    else
-				return response( '{error: Something bad happened}', 500 );
+				return response( ['error' => 'Something bad happened'], 500 );
 	    }
 	    else{
 	    	if( $room->exists() )
@@ -62,13 +62,13 @@ class RoomController extends \App\Http\Controllers\Controller
 
 		$room = Room::find( $id );
 		if( !$room->exists() ){
-			return response( '{error: Room not found}', 404 );
+			return response( ['error' => 'Room not found'], 404 );
 		}
 
 		if( $room->update( $request->all() ) )
 			return $room;
 		else
-			return response( '{error: Something bad happened}', 500 );
+			return response( ['error' => 'Something bad happened'], 500 );
 
     }
 
@@ -79,7 +79,7 @@ class RoomController extends \App\Http\Controllers\Controller
 		if( Room::destroy( $id ) )
 			return response( '', 204 ); //204 means ok, but you don't get any content back
 		else
-			return response( '{error: Something bad happened}', 500 );
+			return response( ['error' => 'Something bad happened'], 500 );
 
     }
 

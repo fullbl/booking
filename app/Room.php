@@ -10,7 +10,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class Room extends Model
 {
-	/**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -33,5 +33,16 @@ class Room extends Model
      */
     public function bookings(){
         return $this->hasMany( Booking::class );
+    }
+
+    /**
+     * Force attribute to integer, we need it to perform operations
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function setBedsAttribute($value)
+    {
+        $this->attributes['beds'] = (int)($value);
     }
 }

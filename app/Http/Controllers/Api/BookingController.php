@@ -39,14 +39,17 @@ class BookingController extends \App\Http\Controllers\Controller
 
 		$room = Room::find( $request->input( 'room_id' ) );
 
-		//TODO: check if there are beds for that day
+		
+		$freeBeds = $room->beds - $room->bookings()->where( 'date', $request->get( 'date' ) )->sum( 'beds' );
+		if( $freeBeds < $request->get( 'beds' ) )
+			return response( ['error' => 'all beds are taken, try another day'], 400 );
 
 		$booking = $room->bookings()->create( $request->only( 'beds', 'date' ) );
 		if($request->ajax()){
 			if( $room->exists() )
-		    	return $booking;
+		    	return response( $booking, 201 );
 		    else
-				return response( '{error: Something bad happened}', 500 );
+				return response( ['error' => 'Something bad happened'], 500 );
 	    }
 	    else{
 	    	if( $room->exists() )
@@ -68,13 +71,13 @@ class BookingController extends \App\Http\Controllers\Controller
 
 		$booking = Booking::find( $id );
 		if( !$booking->exists() ){
-			return response( '{error: Booking not found}', 404 );
+			return response( ['error' => 'Booking not found'], 404 );
 		}
 
 		if( $booking->update( $request->all() ) )
 			return $booking;
 		else
-			return response( '{error: Something bad happened}', 500 );
+			return response( ['error' => 'Something bad happened'], 500 );
 
     }
 
@@ -85,7 +88,7 @@ class BookingController extends \App\Http\Controllers\Controller
 		if( Booking::destroy( $id ) )
 			return response( '', 204 ); //204 means ok, but you don't get any content back
 		else
-			return response( '{error: Something bad happened}', 500 );
+			return response( ['error' => 'Something bad happened'], 500 );
 
     }
 

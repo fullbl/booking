@@ -1,8 +1,4 @@
-var Booking = function(){
-
-	
-
-};
+var Booking = function(){};
 
 /* ------------------ GENERAL FUNCTIONS ------------------------- */
 /**
@@ -21,7 +17,7 @@ Booking.prototype.addClassName = function( element, className ){
 		}
 
 	}
-}
+};
 
 /**
  * classList.remove simple polyfill
@@ -35,7 +31,7 @@ Booking.prototype.removeClassName = function( element, className ){
 	else{*/
 		element.className = (' ' + element.className + ' ').replace( className, '' ).trim();
 	//}
-}
+};
 
 /**
  * send ajax request
@@ -54,25 +50,29 @@ Booking.prototype.xhr = function( url, method, data, callback, error ){
 		return false;
 	}
 	req.onreadystatechange = function() {
-		var status = parseInt( req.status / 100 );
+		var status,
+			response;
 	    if( req.readyState == XMLHttpRequest.DONE ){
-
-	    	if( status == 2 ){
-	    		if( typeof callback === 'function' )
-	    			if( req.response )
-	        			callback( JSON.parse( req.response ) );
-	        		else
-	        			callback();
-	    	}
-	        else if( typeof error === 'function' ){
-	        	try{
-	        		if( req.response )
-	        			error( JSON.parse( req.response ) );
-	        		else
-	        			error();
+	    	if( req.response ){
+	    		try{
+	    			response = JSON.parse( req.response );
 	        	}
 	        	catch( e ){
-	        		alert( 'something bad happened' );
+	        		alert( 'can\'t read response' );
+	        	}
+	    	}
+
+	    	status = parseInt( req.status / 100 );
+	    	if( status == 2 ){
+	    		if( typeof callback === 'function' )
+        			callback( response );
+	    	}
+	        else if( status == 4 ){
+	        	if( typeof error === 'function' ){
+    				error( response );
+	        	}
+	        	else if( response.hasOwnProperty( 'error' ) ){
+		        	alert( response.error );
 	        	}
 	        }
 
@@ -99,7 +99,23 @@ Booking.prototype.loopFormElements = function( elements, callback ){
 			callback( elements[i] );
 		}
 	}
-}
+};
+
+/**
+ * set error class to elements with errors
+ * @param  {Array} elements where to check
+ * @param  {Array} errors what to check
+ */
+Booking.prototype.showResponseErrors = function( elements, errors ){
+	var self = this;
+	this.loopFormElements( elements, function( el ){
+		if( errors.hasOwnProperty( el.name ) > -1 )
+			self.removeClassName( el.parentElement, 'has-error' );
+		else
+			self.addClassName( el.parentElement, 'has-error' );
+
+	})
+};
 
 /**
  * send form data through ajax
@@ -112,13 +128,7 @@ Booking.prototype.sendForm = function( elements, action, method, callback, error
 
 	if( typeof error === 'undefined' ){
 		error = function( errors ){
-			self.loopFormElements( elements, function( el ){
-				self.removeClassName( el.parentElement, 'has-error' );
-			})
-
-			self.loopFormElements( errors, function( el ){
-				self.addClassName( el.parentElement, 'has-error' );
-			})
+			self.showResponseErrors( elements, errors );
 		};
 	}
 	
@@ -148,7 +158,7 @@ Booking.prototype.createButton = function( action ){
 	button.dataset.action = action;
 	button.innerHTML = action;
 	return button;
-}
+};
 
 /* ---------------------- APP FUNCTIONS ------------------------- */
 
@@ -192,7 +202,7 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		table.appendChild( tr );
 	else
 		return tr;
-}
+};
 
 /**
  * load index table
@@ -220,7 +230,7 @@ Booking.prototype.loadTable = function( tableContainer, actions ){
 		tableContainer.appendChild( table );
 
 	});
-}
+};
 
 
 Booking.prototype.showCalendar = function( row ){
@@ -261,7 +271,7 @@ Booking.prototype.showCalendar = function( row ){
 	row.lastChild.dataset.oldHtml = row.lastChild.innerHTML;
 	row.lastChild.innerHTML = '';
 	row.lastChild.appendChild( form );
-}
+};
 
 
 /* ---------------------- STARTUP FUNCTIONS ------------------------- */

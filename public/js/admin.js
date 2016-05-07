@@ -64,7 +64,9 @@ Booking.prototype.removeRowTable = function( row, url ){
 	var self = this;
 	this.xhr( url, 'DELETE', undefined, function(){
 		row.parentElement.removeChild( row );
-	} );
+	}, function( res ){
+
+	});
 };
 
 /* ---------------------- STARTUP FUNCTIONS ------------------------- */
