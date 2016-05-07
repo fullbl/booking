@@ -108,6 +108,9 @@ Booking.prototype.loopFormElements = function( elements, callback ){
  */
 Booking.prototype.showResponseErrors = function( elements, errors ){
 	var self = this;
+	if( errors.hasOwnProperty( 'error' ) ){
+		alert( errors.error );
+	}
 	this.loopFormElements( elements, function( el ){
 		if( errors.hasOwnProperty( el.name ) > -1 )
 			self.removeClassName( el.parentElement, 'has-error' );

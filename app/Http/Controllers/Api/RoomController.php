@@ -13,6 +13,17 @@ use App\Room;
  */
 class RoomController extends \App\Http\Controllers\Controller
 {
+
+	/**
+	 * apply middleware to protected actions
+	 */
+	public function __construct(){
+		 $this->middleware('auth', ['only' => [
+            'update',
+            'destroy',
+        ]]);
+	}
+
 	/** 
 	 * show a listing
 	 * @return array Room
