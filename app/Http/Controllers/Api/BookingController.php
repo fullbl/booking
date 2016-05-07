@@ -86,10 +86,20 @@ class BookingController extends \App\Http\Controllers\Controller
 		    'date' => 'required|date'
 		] );
 
-		$booking = Booking::find( $id );
+		$booking = Booking::with('room')->find( $id );
 		if( !$booking->exists() ){
 			return response( ['error' => 'Booking not found'], 404 );
 		}
+		
+		$freeBeds = 
+			$booking->room->beds
+			//this is actually subracting eventual orphan rows
+			- $booking->room->bookings()->where( 'date', $request->get( 'date' ) )->sum( 'beds' )
+			+ $booking->beds //don't count beds of current booking
+			;
+
+		if( $freeBeds < $request->get( 'beds' ) )
+			return response( ['error' => 'not enough beds, try with another day/room'], 400 );
 
 		if( $booking->update( $request->all() ) )
 			return $booking;

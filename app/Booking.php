@@ -33,7 +33,7 @@ class Booking extends Model
      * Get the bookings owned by room.
      */
     public function room(){
-        return $this->belongsTo( Room::class )->select( ['name'] );
+        return $this->belongsTo( Room::class )->select( ['name', 'beds' ] );
     }
 
     /**
