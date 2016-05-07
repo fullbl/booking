@@ -175,7 +175,7 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		td;
 
 	for( var i in object )
-		if( object.hasOwnProperty( i ) && i != '_id' ){
+		if( object.hasOwnProperty( i ) && i != '_id' && object[i] != '_id'){
 			td = _td.cloneNode();
 			td.dataset.name = i;
 			if( object[i].hasOwnProperty( 'name' ) ){
@@ -216,6 +216,7 @@ Booking.prototype.loadTable = function( tableContainer, actions ){
 		table.className = 'table';
 		table.id = tableContainer.id + '-table';
 		if( objects.length ){
+			table.appendChild( self.createRowInTable( Object.keys( objects[0] ) ) );
 			for( var i in objects ){
 				if( objects.hasOwnProperty( i ) ){
 					table.appendChild( self.createRowInTable( objects[i], undefined, actions ) );
