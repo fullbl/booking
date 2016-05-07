@@ -1,8 +1,5 @@
 /* ------------------ GENERAL FUNCTIONS ------------------------- */
 
-
-
-
 /* ---------------------- APP FUNCTIONS ------------------------- */
 
 /**
@@ -63,9 +60,8 @@ Booking.prototype.saveRowTable = function( row, url ){
 Booking.prototype.removeRowTable = function( row, url ){
 	var self = this;
 	this.xhr( url, 'DELETE', undefined, function(){
-		row.parentElement.removeChild( row );
-	}, function( res ){
-
+		location.reload() // deleting a room means deleting related bookings.. it's easier to reload page!
+	}, function( res ){ // do nothing if error
 	});
 };
 

@@ -45,4 +45,15 @@ class Room extends Model
     {
         $this->attributes['beds'] = (int)($value);
     }
+
+    /**
+     * delete bookings when room is deleted!
+     */
+    protected static function boot() {
+        parent::boot();
+
+        static::deleting( function( $room ){ // before delete() method call this
+            $room->bookings()->delete();
+        });
+    }
 }

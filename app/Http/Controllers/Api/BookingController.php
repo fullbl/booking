@@ -93,7 +93,6 @@ class BookingController extends \App\Http\Controllers\Controller
 		
 		$freeBeds = 
 			$booking->room->beds
-			//this is actually subracting eventual orphan rows
 			- $booking->room->bookings()->where( 'date', $request->get( 'date' ) )->sum( 'beds' )
 			+ $booking->beds //don't count beds of current booking
 			;
