@@ -97,8 +97,9 @@ class RoomController extends \App\Http\Controllers\Controller
 
 	/**
 	 * returns room names with availability for chosen date
-	 * query can be improved, but this mantain database compatibility
-	 * @param  string $date date in YYYY-MM-DD format
+	 * query can be improved, but this version mantain database compatibility
+	 * if there will be more actions related to availability, move everything in another controller
+	 * @param  string $date date in YYYY-MM-DD format (actually it can work with other formats)
 	 * @return Object       [room name, availability]
 	 */
     public function checkAvailability( $date ){

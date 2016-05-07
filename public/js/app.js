@@ -238,7 +238,10 @@ Booking.prototype.loadTable = function( tableContainer, actions ){
 	});
 };
 
-
+/**
+ * show calendar and beds in booking row's last child
+ * @param  {DOMelement} row row where to show calendar and beds
+ */
 Booking.prototype.showCalendar = function( row ){
 	var form = document.createElement( 'FORM' ),
 		_input = document.createElement( 'INPUT' );
