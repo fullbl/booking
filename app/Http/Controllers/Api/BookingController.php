@@ -59,7 +59,7 @@ class BookingController extends \App\Http\Controllers\Controller
 		
 		$freeBeds = $room->beds - $room->bookings()->where( 'date', $request->get( 'date' ) )->sum( 'beds' );
 		if( $freeBeds < $request->get( 'beds' ) )
-			return response( ['error' => 'all beds are taken, try another day'], 400 );
+			return response( ['error' => 'not enough beds, try with another day/room'], 400 );
 
 		$booking = $room->bookings()->create( $request->only( 'beds', 'date' ) );
 		if($request->ajax()){
