@@ -168,8 +168,11 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		if( object.hasOwnProperty( i ) && i != '_id' ){
 			td = _td.cloneNode();
 			td.dataset.name = i;
-			if( object[i].hasOwnProperty( 'name' ) ) //it could be a booking with a room object... for simplicity just get the name
+			if( object[i].hasOwnProperty( 'name' ) ){
+			 	//it could be a booking with a room object... for simplicity just get the name
 				td.innerHTML = object[i].name;
+				td.className = "related";
+			}
 			else
 				td.innerHTML = object[i];
 
@@ -180,7 +183,6 @@ Booking.prototype.createRowInTable = function( object, table, actions ){
 		td = _td.cloneNode();
 		td.className = 'actions';
 		for( var i in actions ){			
-			//TODO: to improve speed, move createButton out of the for cycle
 			td.appendChild( this.createButton( actions[i] ) );
 		}
 		tr.dataset.id = object._id;
@@ -268,42 +270,43 @@ var b = new Booking(); //global, it's used also in admin.js
 (function(){
 var userContainer = document.getElementById('user'),
 	roomsContainer = document.getElementById( 'user-rooms' );
+	if( roomsContainer ){
+		b.loadTable( roomsContainer, [ 'book' ] );
 
-	b.loadTable( roomsContainer, [ 'book' ] );
+		/* --------------------- HANDLERS -------------------- */
 
-	/* --------------------- HANDLERS -------------------- */
-
-	/** actions buttons listener */
-	roomsContainer.addEventListener( 'submit', function( e ){
-		if( e.target.tagName == 'FORM' ){
-			e.preventDefault();
-			b.sendForm( 
-				e.target.children, 
-				e.target.action,
-				e.target.method,
-				function(){
-					alert( 'booking sent!' );
-			} );
-		}
-	});
-	roomsContainer.addEventListener( 'click', function( e ){
-		switch( e.target.dataset.action ){
-			case 'book':
-				b.showCalendar( e.target.parentElement.parentElement );
-				break;
-
-			case 'send':
+		/** actions buttons listener */
+		roomsContainer.addEventListener( 'submit', function( e ){
+			if( e.target.tagName == 'FORM' ){
 				e.preventDefault();
 				b.sendForm( 
-					e.target.parentElement.children, 
-					e.target.parentElement.action,
-					e.target.parentElement.method,
-				 	function(){
+					e.target.children, 
+					e.target.action,
+					e.target.method,
+					function(){
 						alert( 'booking sent!' );
-					} );
-				break;
-		}
-	});
+				} );
+			}
+		});
+		roomsContainer.addEventListener( 'click', function( e ){
+			switch( e.target.dataset.action ){
+				case 'book':
+					b.showCalendar( e.target.parentElement.parentElement );
+					break;
+
+				case 'send':
+					e.preventDefault();
+					b.sendForm( 
+						e.target.parentElement.children, 
+						e.target.parentElement.action,
+						e.target.parentElement.method,
+					 	function(){
+							alert( 'booking sent!' );
+						} );
+					break;
+			}
+		});
+	}
 
 
 

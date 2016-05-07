@@ -11,7 +11,6 @@
  */
 Booking.prototype.editRowTable = function( row ){
 	var tds = row.children, 
-		fakeForm = document.createElement( 'FORM' ),
 		saveElement = document.createElement( 'DIV' );
 
 	//save actual row for later
@@ -21,15 +20,21 @@ Booking.prototype.editRowTable = function( row ){
 
 	for( var i in tds ){
 		if( tds.hasOwnProperty( i ) ){
-			if( tds[i].className == 'actions' ){
-				tds[i].innerHTML = saveElement.innerHTML;
-			}
-			else{
-				tds[i].innerHTML = '<input '
-					+ 'class="form-control" '
-					+ 'type="text" '
-					+ 'name="' + tds[i].dataset.name + '" '
-					+ 'value="' + tds[i].innerHTML + '">';
+			switch( tds[i].className ){
+				case 'actions':
+					tds[i].innerHTML = saveElement.innerHTML;
+					break;
+
+				case 'related':
+					//can't edit field from related tables
+					break;
+
+				default:
+					tds[i].innerHTML = '<input '
+						+ 'class="form-control" '
+						+ 'type="text" '
+						+ 'name="' + tds[i].dataset.name + '" '
+						+ 'value="' + tds[i].innerHTML + '">';
 			}
 		}
 	}
@@ -66,14 +71,16 @@ Booking.prototype.removeRowTable = function( row, url ){
 (function(){
 	var adminContainer = document.getElementById('admin'),
 	roomsForm = document.getElementById( 'admin-rooms' ),
-	bookingsForm = document.getElementById( 'admin-bookings' );
+	bookingsForm = document.getElementById( 'admin-bookings' ),
+	handler
+	;
+
 	b.loadTable( roomsForm, [ 'edit', 'remove' ] );
 	b.loadTable( bookingsForm, [ 'edit', 'remove' ] );
 
 	/* --------------------- HANDLERS -------------------- */
 
-	/** actions buttons listener */
-	roomsForm.addEventListener( 'click', function( e ){
+	handler = function( endpoint, e ){
 		switch( e.target.dataset.action ){
 			case 'edit':
 				b.editRowTable( e.target.parentElement.parentElement );
@@ -82,16 +89,23 @@ Booking.prototype.removeRowTable = function( row, url ){
 			case 'remove':
 				b.removeRowTable( 
 					e.target.parentElement.parentElement, 
-					'/api/room/' + e.target.parentElement.parentElement.dataset.id );
+					endpoint + e.target.parentElement.parentElement.dataset.id );
 				break;
 
-			case 'save':
-				//TODO: get action from backend (using META or <script>)
+			case 'save':				
 				b.saveRowTable( 
 					e.target.parentElement.parentElement, 
-					'/api/room/' + e.target.parentElement.parentElement.dataset.id );
+					endpoint + e.target.parentElement.parentElement.dataset.id );
 			break;
 		}
+
+	}
+	/** actions buttons listener */
+	roomsForm.addEventListener( 'click', function( e ){
+		handler( '/api/room/', e ); //TODO: get action from backend (using META or <script>)
+	});
+	bookingsForm.addEventListener( 'click', function( e ){
+		handler( '/api/booking/', e ); //TODO: get action from backend (using META or <script>)
 	});
 
 	/** forms submit listener */
@@ -102,8 +116,8 @@ Booking.prototype.removeRowTable = function( row, url ){
 				e.target.elements, 
 				e.target.action, 
 				e.target.method, 
-				function( room ){
-					b.createRowInTable( room, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
+				function( obj ){
+					b.createRowInTable( obj, document.getElementById( 'admin-rooms-table' ), [ 'edit', 'remove' ] );
 				} );
 		}
 	} );

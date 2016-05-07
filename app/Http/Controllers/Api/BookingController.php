@@ -20,6 +20,8 @@ class BookingController extends \App\Http\Controllers\Controller
 	 * @return array Room
 	 */
     public function index(){
+    	    //TODO: add filtering options for index
+
     	return Booking::with('room')->get();
     }
 
@@ -53,6 +55,38 @@ class BookingController extends \App\Http\Controllers\Controller
 	    		return back()->withInput();
 	    }
     }
-    //TODO: copy from RoomController
-    //TODO: add filtering options for index
+        
+    /**
+	 * update a booking	 
+	 * @return Booking object just updated
+	 */
+    public function update( Request $request, $id ){
+    	$this->validate( $request, [
+		    'beds' => 'required|integer',
+		    'date' => 'required|date'
+		] );
+
+		$booking = Booking::find( $id );
+		if( !$booking->exists() ){
+			return response( '{error: Booking not found}', 404 );
+		}
+
+		if( $booking->update( $request->all() ) )
+			return $booking;
+		else
+			return response( '{error: Something bad happened}', 500 );
+
+    }
+
+    /**
+	 * delete a room	 
+	 */
+    public function destroy( Request $request, $id ){
+		if( Booking::destroy( $id ) )
+			return response( '', 204 ); //204 means ok, but you don't get any content back
+		else
+			return response( '{error: Something bad happened}', 500 );
+
+    }
+
 }
