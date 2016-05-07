@@ -19,10 +19,17 @@ class BookingController extends \App\Http\Controllers\Controller
 	 * show a listing
 	 * @return array Room
 	 */
-    public function index(){
-    	    //TODO: add filtering options for index
+    public function index( Request $request ){
+    	$bookings = Booking::with('room');
+    	
+    	/* filtering by date - not needed for now
+    	if( $request->has('date') )
+    		$bookings->where( 'date', $request->get('date') );
+		*/
+		
+		$bookings->orderBy( 'date', 'DESC' );
 
-    	return Booking::with('room')->get();
+    	return $bookings->get();
     }
 
     /**
